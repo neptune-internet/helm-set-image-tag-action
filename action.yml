@@ -51,7 +51,7 @@ inputs:
   commit_message:
     description: Commit message
     required: false
-    default: Automated commit on behalf-of ${{ github.actor }}
+    default: Automated commit by ${{ inputs.git_user_name }}
 
   commit_and_push:
     description: Whether to commit and push to remote.

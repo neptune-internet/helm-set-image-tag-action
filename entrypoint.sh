@@ -96,7 +96,7 @@ _git_commit() {
     -c user.name="${GIT_USER_NAME}" \
     -c user.email="${GIT_USER_EMAIL}" \
     commit \
-    --author "${GITHUB_ACTOR} <${GITHUB_ACTOR}@users.noreply.github.com>" \
+    --author "${GIT_USER_NAME} <${GIT_USER_EMAIL}>" \
     --message "${COMMIT_MESSAGE}" \
     ${INPUT_COMMIT_OPTIONS:+"${INPUT_COMMIT_OPTIONS_ARRAY[@]}"};
 }
