@@ -51,7 +51,7 @@ inputs:
   commit_message:
     description: Commit message
     required: false
-    default: Automated commit by ${{ inputs.git_user_name }}
+    default: Bump the Helm chart image tag
 
   commit_and_push:
     description: Whether to commit and push to remote.
