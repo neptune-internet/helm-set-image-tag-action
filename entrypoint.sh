@@ -89,10 +89,12 @@ _git_commit() {
 
   # Check that there is a diff to be committed..
   git diff --cached --exit-code --quiet && return 0
+  GIT_USER_NAME="${INPUT_GIT_USER_NAME:-Larissa}"
+  GIT_USER_EMAIL="${INPUT_GIT_USER_EMAIL:-gitops@neptune.net.au}"
 
   git \
-    -c user.name="${GITHUB_ACTION}" \
-    -c user.email="actions@github.com" \
+    -c user.name="${GIT_USER_NAME}" \
+    -c user.email="${GIT_USER_EMAIL}" \
     commit \
     --author "${GITHUB_ACTOR} <${GITHUB_ACTOR}@users.noreply.github.com>" \
     --message "${COMMIT_MESSAGE}" \
