@@ -95,5 +95,48 @@ inputs:
     default: gitops@neptune.net.au
 
 runs:
-  using: docker
-  image: Dockerfile
+  using: composite
+  steps:
+    - name: Install dependencies
+      shell: bash
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y bash git patch python3 python3-pip gcc python3-dev git-lfs
+        git lfs install
+        pip install --no-cache-dir pybump yamale yamllint pyyaml ruamel.yaml
+
+        # Install yq (v4) binary
+        sudo wget -qO /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+        sudo chmod +x /usr/bin/yq
+
+        # Install helm
+        curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+        # Install helm-docs
+        HELM_DOCS_VERSION=v1.11.3
+        curl -L -o /usr/local/bin/helm-docs \
+          https://github.com/norwoodj/helm-docs/releases/download/${HELM_DOCS_VERSION}/helm-docs_${HELM_DOCS_VERSION#v}_Linux_x86_64.tar.gz
+        tar -xzOf /usr/local/bin/helm-docs | sudo tee /usr/local/bin/helm-docs >/dev/null
+        sudo chmod +x /usr/local/bin/helm-docs
+
+    - name: Run Helm Set Image Tag Action
+      shell: bash
+      env:
+        INPUT_VALUES_FILES: ${{ inputs.values_files }}
+        INPUT_TAG_KEYS: ${{ inputs.tag_keys }}
+        INPUT_TAG_VALUE: ${{ inputs.tag_value }}
+        INPUT_BUMP_LEVEL: ${{ inputs.bump_level }}
+        INPUT_HELM_DOCS: ${{ inputs.helm_docs }}
+        INPUT_COMMIT_BRANCH: ${{ inputs.commit_branch }}
+        INPUT_COMMIT_TAG: ${{ inputs.commit_tag }}
+        INPUT_COMMIT_MESSAGE: ${{ inputs.commit_message }}
+        INPUT_COMMIT_AND_PUSH: ${{ inputs.commit_and_push }}
+        INPUT_FORCE: ${{ inputs.force }}
+        INPUT_COMMIT_OPTIONS: ${{ inputs.commit_options }}
+        INPUT_VERBOSE: ${{ inputs.verbose }}
+        INPUT_DRY: ${{ inputs.dry }}
+        INPUT_GIT_USER_NAME: ${{ inputs.git_user_name }}
+        INPUT_GIT_USER_EMAIL: ${{ inputs.git_user_email }}
+      run: |
+        chmod +x "${GITHUB_ACTION_PATH}/entrypoint.sh"
+        "${GITHUB_ACTION_PATH}/entrypoint.sh"
